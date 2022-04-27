@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -42,8 +43,15 @@ func main() {
 	picserve := http.FileServer(http.Dir(path))
 	http.Handle("/pictures/", http.StripPrefix("/pictures/", picserve))
 
+	assetserve := http.FileServer(http.Dir("public"))
+	http.Handle("/public/", http.StripPrefix("/public/", assetserve))
+
+	indexTmpl, err := template.ParseFiles("templates/index.html")
+	if err != nil {
+		log.Fatal("template error:", err)
+	}
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "hi")
+		indexTmpl.Execute(w, "")
 	})
 	http.ListenAndServe(":3050", nil)
 
