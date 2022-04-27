@@ -12,6 +12,10 @@ import (
 
 var extensions = [...]string{".jpg", ".gif", ".png", ".webp"}
 
+type PageData struct {
+	Images []string
+}
+
 func main() {
 
 	if len(os.Args) <= 1 {
@@ -35,9 +39,10 @@ func main() {
 		log.Panic("Glob failed to search path.", err)
 	}
 
+	var images []string
 	for _, path := range results {
 		_, file := filepath.Split(path)
-		fmt.Println(file)
+		images = append(images, file)
 	}
 
 	picserve := http.FileServer(http.Dir(path))
@@ -51,7 +56,8 @@ func main() {
 		log.Fatal("template error:", err)
 	}
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		indexTmpl.Execute(w, "")
+		data := PageData{Images: images}
+		indexTmpl.Execute(w, data)
 	})
 	http.ListenAndServe(":3050", nil)
 
