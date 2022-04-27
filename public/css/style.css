@@ -1,4 +1,10 @@
 .rs-thumb {
     height: 200px;
     width: auto;
+    cursor: pointer;
+}
+.rs-nav-icon{
+    padding: .5rem;
+    cursor: pointer;
+    color: #0d6efd;
 }
