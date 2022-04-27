@@ -41,8 +41,10 @@ func main() {
 
 	var images []string
 	for _, path := range results {
-		_, file := filepath.Split(path)
-		images = append(images, file)
+		if isImage(path) {
+			_, file := filepath.Split(path)
+			images = append(images, file)
+		}
 	}
 
 	picserve := http.FileServer(http.Dir(path))
