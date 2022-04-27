@@ -3,31 +3,29 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/canvas"
 )
 
 var extensions = [...]string{".jpg", ".gif", ".png", ".webp"}
 
 func main() {
-	picPath := ""
-	glb := "{*.jpg,*.png,*.gif,*.webp}"
-	if len(os.Args) > 1 {
-		picPath = os.Args[1]
-	} else {
-		picPath = "./"
-	}
-	picPath, err := filepath.Abs(picPath)
-	if err != nil {
-		log.Panic("Failed to get absolute path", err)
-	}
-	fmt.Printf("Loading pictures from %s", picPath)
 
-	fullglob := filepath.Join(picPath, glb)
+	if len(os.Args) <= 1 {
+		log.Panic("You must specify a directory where images are stored.")
+	}
+
+	path := os.Args[1]
+
+	dirinfo, err := os.Stat(path)
+
+	if os.IsNotExist(err) || !dirinfo.IsDir() {
+		log.Panic("That directory does not exist or has an error.")
+	}
+
+	fullglob := filepath.Join(path, "*")
 	fmt.Printf("Loading glob %s", fullglob)
 
 	results, err := filepath.Glob(fullglob)
@@ -36,28 +34,25 @@ func main() {
 		log.Panic("Glob failed to search path.", err)
 	}
 
-	for _, file := range results {
+	for _, path := range results {
+		_, file := filepath.Split(path)
 		fmt.Println(file)
 	}
 
-	myApp := app.New()
-	w := myApp.NewWindow("Image")
+	picserve := http.FileServer(http.Dir(path))
+	http.Handle("/pictures/", http.StripPrefix("/pictures/", picserve))
 
-	//image := canvas.NewImageFromResource(theme.FyneLogo())
-	// image := canvas.NewImageFromURI(uri)
-	//image := canvas.NewImageFromImage("ramsey.jpg")
-	// image := canvas.NewImageFromReader(reader, name)
-	image := canvas.NewImageFromFile("ramsey.jpg")
-	image.FillMode = canvas.ImageFillOriginal
-	w.SetContent(image)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "hi")
+	})
+	http.ListenAndServe(":3050", nil)
 
-	w.ShowAndRun()
 }
 
 // Check whether extensions exists in the filename
 func isImage(filename string) bool {
 	for _, ext := range extensions {
-		if strings.HasSuffix(ext) {
+		if strings.HasSuffix(filename, ext) {
 			return true
 		}
 	}
