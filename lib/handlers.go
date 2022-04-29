@@ -18,15 +18,15 @@ type APIJSONBasicResponse struct {
 }
 
 type PageData struct {
-	Images []string
+	Images TPictures
 }
 
 func SetupHTTPHandlers() {
 
 	for _, dir := range Directories {
-		picserve := http.FileServer(http.Dir(dir.Hash))
-		u := fmt.Sprintf("/%s/", dir.Hash)
-		http.Handle(u, http.StripPrefix(u, picserve))
+		picserve := http.FileServer(http.Dir(dir.Path))
+		b := fmt.Sprintf("/%s/", dir.Hash)
+		http.Handle(b, http.StripPrefix(b, picserve))
 	}
 
 	assetserve := http.FileServer(http.Dir("public"))
@@ -39,7 +39,7 @@ func SetupHTTPHandlers() {
 		log.Fatal("template error:", err)
 	}
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		data := PageData{Images: []string{}}
+		data := PageData{Images: Pictures}
 		indexTmpl.Execute(w, data)
 	})
 }
