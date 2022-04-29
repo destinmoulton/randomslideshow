@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"randomslideshow/lib"
 )
 
 var extensions = [...]string{".jpg", ".gif", ".png", ".webp"}
@@ -46,21 +47,7 @@ func main() {
 			images = append(images, file)
 		}
 	}
-
-	picserve := http.FileServer(http.Dir(path))
-	http.Handle("/pictures/", http.StripPrefix("/pictures/", picserve))
-
-	assetserve := http.FileServer(http.Dir("public"))
-	http.Handle("/public/", http.StripPrefix("/public/", assetserve))
-
-	indexTmpl, err := template.ParseFiles("templates/index.html")
-	if err != nil {
-		log.Fatal("template error:", err)
-	}
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		data := PageData{Images: images}
-		indexTmpl.Execute(w, data)
-	})
+	lib.SetupHTTPHandlers()
 	http.ListenAndServe(":3050", nil)
 
 }
