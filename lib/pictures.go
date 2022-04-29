@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"io/fs"
 	"path/filepath"
 	"strings"
 )
@@ -8,32 +9,56 @@ import (
 var extensions = [...]string{".jpg", ".gif", ".png", ".webp"}
 
 type Picture struct {
-	Filename string
-	FullPath string
+	Filename  string
+	FullPath  string
+	Directory *Directory
 }
 
-func getPictures(path string) ([]string, error) {
+var Pictures = make(map[string]Picture)
 
-	results, err := filepath.Glob(path)
+func FindPictures() error {
 
-	if err != nil {
-		return nil, err
-	}
-	var pics []string
-	for _, path := range results {
-		if isImage(path) {
-			_, file := filepath.Split(path)
-			pics = append(pics, file)
+	for _, dir := range Directories {
+		err := filepath.Walk(dir.Path, walker)
+		if err != nil {
+			return err
 		}
 	}
-	return pics, nil
+
+	clearEmptyDirectories()
+
+	return nil
 }
 
-/*
+func clearEmptyDirectories() {
+	hasPictures := make(map[string]bool)
+	for _, pic := range Pictures {
+		_, ok := hasPictures[pic.Directory.Path]
+		if !ok {
+			hasPictures[pic.Directory.Path] = true
+		}
+	}
+
+	for k := range Directories {
+		_, ok := hasPictures[k]
+		if !ok {
+			delete(Directories, k)
+		}
+	}
+}
+
 func walker(path string, info fs.FileInfo, err error) error {
-
+	if isImage(path) {
+		// Lookup the hash
+		d := Directories[filepath.Dir(path)]
+		Pictures[path] = Picture{Filename: info.Name(), FullPath: path, Directory: &d}
+	} else if IsValidDir(path) {
+		if IsDirectoryUnique(path) {
+			Directories[path] = NewDirectory(path)
+		}
+	}
+	return nil
 }
-*/
 
 // Check whether extensions exists in the filename
 func isImage(filename string) bool {
