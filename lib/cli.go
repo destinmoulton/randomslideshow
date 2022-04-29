@@ -3,15 +3,10 @@ package lib
 import (
 	"flag"
 	"fmt"
-	"os"
 )
 
-type CLIArgs struct {
-	Flags map[string]string
-	Paths []string
-}
-
-func GetCLIArgs() (*CLIArgs, error) {
+// Parse the flags and args
+func ParseCLIArgs() (map[string]string, error) {
 	var ip string
 	var port string
 	flag.StringVar(&ip, "ip", "localhost", "server ip address")
@@ -29,16 +24,13 @@ func GetCLIArgs() (*CLIArgs, error) {
 		return nil, fmt.Errorf("cli: you must include a directory")
 	}
 	for _, p := range paths {
-		if !isValidDir(p) {
+		if !IsValidDir(p) {
 			return nil, fmt.Errorf("cli: %s is not a valid directory", p)
 		}
+
+		if IsDirectoryUnique(p) {
+			Directories[p] = NewDirectory(p)
+		}
 	}
-	return &CLIArgs{f, paths}, nil
-}
-
-func isValidDir(dir string) bool {
-
-	dirinfo, err := os.Stat(dir)
-
-	return !os.IsNotExist(err) && dirinfo.IsDir()
+	return f, nil
 }
