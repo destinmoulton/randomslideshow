@@ -7,13 +7,17 @@ import (
 	"net/http"
 )
 
-type JSONPictureRequestDelete struct {
+type APIJSONPictureDeleteRequest struct {
 	PictureFilename string `json:"picture_filename"`
 }
 
 type APIJSONBasicResponse struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
+}
+
+type PageData struct {
+	Images []string
 }
 
 func SetupHTTPHandlers() {
@@ -28,7 +32,7 @@ func SetupHTTPHandlers() {
 		switch r.Method {
 		case http.MethodDelete:
 			{
-				var jd JSONPictureRequestDelete
+				var jd APIJSONPictureDeleteRequest
 				if r.Body == nil {
 					http.Error(w, "No request body.", http.StatusBadRequest)
 					return

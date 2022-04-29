@@ -13,10 +13,6 @@ import (
 
 var extensions = [...]string{".jpg", ".gif", ".png", ".webp"}
 
-type PageData struct {
-	Images []string
-}
-
 func main() {
 
 	if len(os.Args) <= 1 {
