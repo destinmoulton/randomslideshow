@@ -23,11 +23,13 @@ func HashDirectory(dir string) string {
 	return fmt.Sprintf("%x", sha1.Sum([]byte(dir)))
 }
 
+// Does this directory not exist in the map?
 func IsDirectoryUnique(dir string) bool {
 	_, ok := Directories[dir]
 	return !ok
 }
 
+// Is this path a directory?
 func IsValidDir(dir string) bool {
 
 	dirinfo, err := os.Stat(dir)
