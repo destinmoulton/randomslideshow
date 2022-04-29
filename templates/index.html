@@ -25,12 +25,12 @@
             <a
                 data-fslightbox="gallery"
                 class="rs-thumb-link"
-                href="/pictures/{{.}}"
+                href="/{{.Directory.Hash}}/{{.Filename}}"
             >
                 <img
                     class="lazy img-thumbnail rs-thumb"
-                    data-src="/pictures/{{.}}"
-                    title="{{.}}"
+                    data-src="/{{.Directory.Hash}}/{{.Filename}}"
+                    title="{{.Filename}}"
                 />
             </a>
             {{end}}
