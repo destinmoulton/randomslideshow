@@ -14,7 +14,9 @@ type Picture struct {
 	Directory *Directory
 }
 
-var Pictures = make(map[string]Picture)
+type TPictures map[string]Picture
+
+var Pictures = make(TPictures)
 
 func FindPictures() error {
 
