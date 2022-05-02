@@ -37,7 +37,7 @@
 
     function shuffleThumbs() {
         // Scroll to top
-        window.scrollTo(xCoord, yCoord);
+        window.scrollTo(0, 0);
 
         var ul = document.querySelector("#rs-gallery-container");
         for (var i = ul.children.length; i >= 0; i--) {
