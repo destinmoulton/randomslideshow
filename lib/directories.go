@@ -1,8 +1,6 @@
 package lib
 
 import (
-	"crypto/sha1"
-	"fmt"
 	"os"
 )
 
@@ -14,13 +12,8 @@ type Directory struct {
 var Directories = make(map[string]Directory)
 
 func NewDirectory(path string) Directory {
-	hash := HashDirectory(path)
+	hash := HashString(path)
 	return Directory{hash, path}
-}
-
-// Get the sha1 hash hex of a directory
-func HashDirectory(dir string) string {
-	return fmt.Sprintf("%x", sha1.Sum([]byte(dir)))
 }
 
 // Does this directory not exist in the map?
