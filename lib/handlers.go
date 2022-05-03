@@ -2,14 +2,17 @@ package lib
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 )
 
 type APIJSONPictureDeleteRequest struct {
-	PictureFilename string `json:"picture_filename"`
+	Action      string `json:"action"`
+	PicturePath string `json:"picture_path"`
 }
 
 type APIJSONBasicResponse struct {
@@ -54,14 +57,27 @@ func apiPictureHandler(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "No request body.", http.StatusBadRequest)
 				return
 			}
-			err := json.NewDecoder(r.Body).Decode(&jd)
+			fmt.Println(r.Body)
+			decoder := json.NewDecoder(r.Body)
+			decoder.DisallowUnknownFields()
+			err := decoder.Decode(&jd)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
 
-			if jd.PictureFilename == "" {
+			if jd.PicturePath == "" {
 				http.Error(w, "Request did not include valid picture_filename.", http.StatusBadRequest)
+				return
+			}
+			if _, err := os.Stat(jd.PicturePath); errors.Is(err, os.ErrNotExist) {
+				http.Error(w, "That file does not exist.", http.StatusBadRequest)
+				return
+			}
+
+			err = os.Remove(jd.PicturePath)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
 
