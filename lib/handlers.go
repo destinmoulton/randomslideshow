@@ -57,7 +57,6 @@ func apiPictureHandler(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "No request body.", http.StatusBadRequest)
 				return
 			}
-			fmt.Println(r.Body)
 			decoder := json.NewDecoder(r.Body)
 			decoder.DisallowUnknownFields()
 			err := decoder.Decode(&jd)
@@ -80,6 +79,7 @@ func apiPictureHandler(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
+			RemovePictureFromMap(jd.PicturePath)
 
 			data := APIJSONBasicResponse{200, "Successfully deleted picture."}
 			msg, err := json.Marshal(data)

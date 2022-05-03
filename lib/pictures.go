@@ -33,6 +33,13 @@ func FindPictures() error {
 	return nil
 }
 
+func RemovePictureFromMap(path string) {
+	_, ok := Pictures[path]
+	if ok {
+		delete(Pictures, path)
+	}
+}
+
 func clearEmptyDirectories() {
 	hasPictures := make(map[string]bool)
 	for _, pic := range Pictures {
