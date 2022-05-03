@@ -101,6 +101,8 @@
             if ($next === null) {
                 $next = $el.previousElementSibling;
             }
+
+            apiDeletePicture(currentImage.path);
             lightbox.close();
             // Remove the element from the dom
             $el.remove();
@@ -112,5 +114,23 @@
                 lightbox.open($next);
             }
         });
+    }
+
+    function apiDeletePicture(picPath) {
+        const data = {
+            action: "delete",
+            picture_path: picPath,
+        };
+        const opts = {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        };
+        const url = "/api/picture/";
+        fetch(url, opts)
+            .then((response) => response.json())
+            .then((data) => console.log(data));
     }
 })();
