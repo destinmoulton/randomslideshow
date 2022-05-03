@@ -8,3 +8,11 @@
     cursor: pointer;
     color: #0d6efd;
 }
+.rs-lb-delete-icon{
+    padding: 4px;
+    margin: 2px;
+    color: maroon;
+    cursor: pointer;
+    border-radius: 3px;
+    background-color: white;
+}
