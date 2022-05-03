@@ -23,9 +23,11 @@
         <div id="rs-gallery-container">
             {{range .Images}}
             <a
-                data-fslightbox="gallery"
+                id="{{.Hash}}"
                 class="rs-thumb-link"
                 href="/{{.Directory.Hash}}/{{.Filename}}"
+                data-fslightbox="gallery"
+                data-fullpath="{{.FullPath}}"
             >
                 <img
                     class="lazy img-thumbnail rs-thumb"

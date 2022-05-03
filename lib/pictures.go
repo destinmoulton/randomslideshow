@@ -12,6 +12,7 @@ type Picture struct {
 	Filename  string
 	FullPath  string
 	Directory *Directory
+	Hash      string
 }
 
 type TPictures map[string]Picture
@@ -53,7 +54,12 @@ func walker(path string, info fs.FileInfo, err error) error {
 	if isImage(path) {
 		// Lookup the hash
 		d := Directories[filepath.Dir(path)]
-		Pictures[path] = Picture{Filename: info.Name(), FullPath: path, Directory: &d}
+		Pictures[path] = Picture{
+			Filename:  info.Name(),
+			FullPath:  path,
+			Directory: &d,
+			Hash:      HashString(path),
+		}
 	} else if IsValidDir(path) {
 		if IsDirectoryUnique(path) {
 			Directories[path] = NewDirectory(path)
